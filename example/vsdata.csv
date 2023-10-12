@@ -1,0 +1,8 @@
+Process ID	Process	Parrallel Group	Team Responsible	Team Count	Tools In Use	Lead Time (LT) - Hours	Batch size	Process Time per batch (PT) - Mins	Process Time per item (PT) - mins
+1	Brain\nstorm	N/A	"B,Analysts"	1	"GSheet"	25	5	60	12
+2	Discovery 	N/A	"PM/BA/Engineer"	1	Confluence/Jira	100	1	300	300
+3	Refinement Session	N/A	"scrum master/integration analyst"	7 engineers with scrum master and analyst	Jira/codebase	25	10	120	12
+4	Sprint Planning	N/A	Whole team	1	Jira	50	10	90	9
+5	Develop & Test	N/A	Engineers	2	GitLab version control and CI/CD pipeline	50	12		1500
+6	RFC/Approvals	N/A	"Integration Team - engineers/scrum master/integration analyst"	2	Gitlab	25	5		60
+7	Deployment\nto Prod	N/A	Engineers	1	Jira/codebase	5	5		150
