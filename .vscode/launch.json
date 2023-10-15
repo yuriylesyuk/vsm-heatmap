@@ -11,6 +11,7 @@
             "program": "${file}",
             "cwd": "${workspaceFolder}/example", 
             "args": [
+                "gen-heatmap",
                 "vsdata.csv"
             ],
             "console": "integratedTerminal",

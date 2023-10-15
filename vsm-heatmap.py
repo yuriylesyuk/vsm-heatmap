@@ -55,9 +55,9 @@ def gen_text_block( dwg, text, x, y, w, h ):
 
 
 
-def gen_svg_timeline(input_file, output_file, timeline_width, svg_height):
+def gen_svg_timeline(input_file, output_file, timeline_width, svg_width, svg_height ):
 
-    svg_width = timeline_width+2000
+    svg_width = svg_width+2000
 
     dwg = svgwrite.Drawing(output_file, profile='tiny', size=("{}px".format(svg_width), "{}px".format(svg_height)) )
     mult = 20
@@ -85,9 +85,11 @@ def gen_svg_timeline(input_file, output_file, timeline_width, svg_height):
             try:
                 process_name = row[1]
                 lead_time = int(row[6])
-                print( "lead_time: {}".format( lead_time)      )          
                 batch_size = int(row[7])
                 process_time = int(row[9])
+
+                #print( "lead_time: {}".format( lead_time)      )          
+
 
                 # Process label
                 gen_text_block( dwg, process_name, x, 40, lead_time*60, 240)
@@ -152,25 +154,72 @@ def gen_html_file( html_file, svg_file ):
     with open( html_file, "w") as file:
         file.write( html_template.format( svg_file = svg_file ))
 
+
+def get_help():
+    return """
+Syntax: 
+    gen-vs-heatmap get-width <file>.csv
+    gen-vs-heatmap gen-heatmap <file>.csv
+    gen-vs-heatmap gen-heatmap <file>.csv <int:svg-width>
+"""
+
 if __name__ == "__main__":
 
+    svg_width = 0
 
-    if len(sys.argv) < 2:
-        print( "ERROR: at least one parameter, .csv file, is expected")
+    if len(sys.argv) < 3:
+        print( "ERROR: at least two parameters, an action and a .csv file, are expected")
+        print( get_help() )
+
         sys.exit(1)
 
-    input_file = sys.argv[1]
+    if len(sys.argv) > 3:
+        try: 
+            svg_width = int( sys.argv[3] )
+        except ValueError:
+            print( "ERROR: If width is provided, it is expected to be int value. Provided: {}".format(sys.argv[3]))
+
+            print( get_help() )
+            sys.exit(3)
+
+    action = sys.argv[1]
+    input_file = sys.argv[2]
+
+    if not os.path.exists( input_file ):
+        print(f"ERROR: The file '{input_file}' does not exist.")
+
+        print( get_help() )
+        sys.exit(6)
+
     basefile, ext = os.path.splitext( input_file )
     if( ext != ".csv" ):
-        print( "ERROR: .csv file expected")
+        print( "ERROR: <file-name>.csv file expected. Provided: {}".format(input_file))
+
+        print( get_help() )
         sys.exit(2)
 
+    if action == "get-width":
 
-    svg_file = basefile + ".svg"
-    html_file = basefile + ".html"
+        width = get_stream_width( input_file)
+        print( width )
 
-    width = get_stream_width( input_file)
-    print( width )
-    gen_svg_timeline(input_file, svg_file, width, 2000 )
-    gen_html_file(html_file, svg_file)
+    elif action == "gen-heatmap":
+        svg_file = basefile + ".svg"
+        html_file = basefile + ".html"
+
+        width = get_stream_width( input_file)
+        if svg_width == 0:
+            svg_width = width
+
+        gen_svg_timeline(input_file, svg_file, width, svg_width, 2000 )
+        gen_html_file(html_file, svg_file)
+
+        print( f"Generated html: {html_file} and diagram: {svg_file} with width: {width} and svg width: {svg_width}.")
+
+    else:
+        print( "Actions is not supported: {}".format(action) )
+        print( "    Supported actions: get-width, gen-heatmap" )
+
+        print( get_help() )
+        sys.exit(4)
 
